@@ -33,13 +33,25 @@ child.once('error', (err) => {
   exit(-1);
 });
 
-for (const signal of Object.keys(os.signals)) {
-  // Those signals cannot be trapped (libuv would throw EINVAL).
-  if (signal === 'SIGKILL' || signal === 'SIGSTOP') {
-    continue;
-  }
-
-  // Forward all signals to the child
+// Forward select signals to the child
+const forwardedSignals: readonly NodeJS.Signals[] = [
+  'SIGABRT',
+  'SIGCONT',
+  'SIGINT',
+  'SIGIOT',
+  'SIGQUIT',
+  'SIGSTOP',
+  'SIGSTOP',
+  'SIGTERM',
+  'SIGTSTP',
+  'SIGTTIN',
+  'SIGTTOU',
+  'SIGURG',
+  'SIGUSR1',
+  'SIGUSR2',
+  'SIGWINCH',
+];
+for (const signal of forwardedSignals) {
   on(signal, (sig) => child.kill(sig));
 }
 
